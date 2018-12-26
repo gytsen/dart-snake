@@ -27,7 +27,9 @@ class Game {
 
   Timer timer;
 
-  Game() {
+  VoidCallback gameOverCallback;
+
+  Game(VoidCallback cb) {
     canvas = CanvasElement(width: 480, height: 480);
 
     var output = querySelector('#output');
@@ -38,6 +40,8 @@ class Game {
 
     snake = Snake.getDefault();
     apple = generateApple();
+
+    gameOverCallback = cb;
 
     document.onKeyPress.listen(handleKeypress);
   }
@@ -56,45 +60,52 @@ class Game {
 
     snake.updateDirection();
 
-    Point newHead = getNewSnakeHead();
+    Point head = newSnakeHead();
 
-    if (snake.body.contains(newHead)) {
+    if (snake.body.contains(head)) {
       timer.cancel();
-      print("game over!");
+      gameOverCallback();
     }
 
-    if (newHead == apple) {
+    if (head == apple) {
       apple = generateApple();
       preserveTail = true;
     }
 
-    snake.addNewHead(newHead, preserveTail: preserveTail);
+    snake.addNewHead(head, preserveTail: preserveTail);
 
     drawPoints(snake.body);
-    drawPoint(ctx, apple, color: '#F00');
+    drawPoint(apple, color: '#F00');
   }
 
-  Point getNewSnakeHead() {
-    Point newHead = fromPoint(snake.head);
-
-    newHead += Snake.directionToPoint[snake.direction];
-    newHead = wrapEdge(newHead);
-    return newHead;
-  }
-
+  /**
+   * Draw a list of `Point`s on the canvas.
+   * Note that this method automatically transforms the internal coordinate space
+   * to the coordiates on the canvas.
+   */
   void drawPoints(List<Point> points) {
     for (var point in points) {
-      drawPoint(ctx, point);
+      drawPoint(point);
     }
   }
 
-  void clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  /**
+   * Draw a coordinate-space point onto the canvas, which is automatically translated to
+   * the correct canvas coordinate.
+   * Takes an optional color string.
+   */
+  void drawPoint(Point p, {String color = '#000'}) {
+    var size = getTrimmedBoxSize();
+    var canvasPoint = getCanvasDrawPoint(p) + BORDER_TRANSPOSE;
+
+    ctx.fillStyle = color;
+    ctx.fillRect(canvasPoint.x, canvasPoint.y, size, size);
+    ctx.fillStyle = BLACK;
   }
 
-  int getBoxSize() {
-    return canvas.width ~/ WIDTH;
-  }
+  void clearCanvas() => ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  int getBoxSize() => canvas.width ~/ WIDTH;
 
   int getTrimmedBoxSize() => getBoxSize() - BOX_BORDER_SIZE;
 
@@ -103,14 +114,12 @@ class Game {
     return new Point(p.x * boxSize, p.y * boxSize);
   }
 
-  void drawPoint(CanvasRenderingContext2D ctx, Point p,
-      {String color = '#000'}) {
-    var size = getTrimmedBoxSize();
-    var canvasPoint = getCanvasDrawPoint(p) + BORDER_TRANSPOSE;
+  Point newSnakeHead() {
+    Point head = copyPoint(snake.head);
 
-    ctx.fillStyle = color;
-    ctx.fillRect(canvasPoint.x, canvasPoint.y, size, size);
-    ctx.fillStyle = BLACK;
+    head += Snake.directionToPoint[snake.direction];
+    head = wrapEdge(head);
+    return head;
   }
 
   Point generateApple() {
@@ -124,9 +133,7 @@ class Game {
   }
 
   // Convenience initializer to construct a new Point from an old one
-  static Point fromPoint(Point old) {
-    return new Point(old.x, old.y);
-  }
+  static Point copyPoint(Point old) => new Point(old.x, old.y);
 
   static Point wrapEdge(Point p) {
     int x = p.x;
@@ -147,6 +154,7 @@ class Game {
     return new Point(x, y);
   }
 
+  // TODO: make this conformant to regular keyboards
   void handleKeypress(KeyboardEvent e) {
     KeyEvent wrapped = KeyEvent.wrap(e);
 
