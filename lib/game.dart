@@ -94,36 +94,32 @@ class Game {
     return apple;
   }
 
-  // TODO: make this conformant to regular keyboards
+  /// FIXME: for some reason my keyboard's arrow keys don't
+  /// register at all, and WASD generates the character code
+  /// instead of the actual key code. These hardcoded values should
+  /// be removed eventually
   void handleKeypress(KeyboardEvent e) {
     KeyEvent wrapped = KeyEvent.wrap(e);
 
     switch (wrapped.keyCode) {
       case KeyCode.UP:
-        snake.requestChangeDirection(Direction.up);
-        break;
-      case KeyCode.DOWN:
-        snake.requestChangeDirection(Direction.down);
-        break;
-      case KeyCode.LEFT:
-        snake.requestChangeDirection(Direction.left);
-        break;
-      case KeyCode.RIGHT:
-        snake.requestChangeDirection(Direction.right);
-        break;
       case 119:
         snake.requestChangeDirection(Direction.up);
         break;
-      case 97:
-        snake.requestChangeDirection(Direction.left);
-        break;
+      case KeyCode.DOWN:
       case 115:
         snake.requestChangeDirection(Direction.down);
         break;
+      case KeyCode.LEFT:
+      case 97:
+        snake.requestChangeDirection(Direction.left);
+        break;
+      case KeyCode.RIGHT:
       case 100:
         snake.requestChangeDirection(Direction.right);
         break;
       default:
+        break;
     }
   }
 }
