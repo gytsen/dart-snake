@@ -7,25 +7,24 @@ import 'dart:math';
 /// [Game] uses and the points the canvas actually uses for drawing
 /// the game.
 class Coordinate {
-  int x;
-  int y;
+  final int x;
+  final int y;
 
   // TODO: Point uses SMI hashing internally, need it?
   int get hashCode => x.hashCode + y.hashCode;
 
-  Coordinate(this.x, this.y);
+  const Coordinate(int x, int y)
+      : this.x = x,
+        this.y = y;
 
-  Coordinate.fromPoint(Point p) {
-    x = p.x;
-    y = p.y;
-  }
-
+  /// Quickly create a new [Coordinate] to modify without
+  /// editing the existing instance's members.
   Coordinate copy() {
     return new Coordinate(x, y);
   }
 
   bool operator ==(other) {
-    if (!(other is Coordinate)) return false;
+    if (other is! Coordinate) return false;
     return x == other.x && y == other.y;
   }
 
