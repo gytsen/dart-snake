@@ -1,4 +1,5 @@
-An absolute bare-bones web app.
+# Snake
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+A little snake game written in Dart.
+
+This is still a work in progress and should not be taken serious as-is.
