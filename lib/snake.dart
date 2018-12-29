@@ -1,46 +1,37 @@
-import 'dart:math';
+import 'package:dart_snake/coordinate.dart';
 
 enum Direction { up, down, left, right }
 
 class Snake {
-  static const Map<Direction, Point> directionToPoint = {
-    Direction.up: const Point(0, -1),
-    Direction.down: const Point(0, 1),
-    Direction.left: const Point(-1, 0),
-    Direction.right: const Point(1, 0)
+  static const Map<Direction, Coordinate> directionToPoint = {
+    Direction.up: const Coordinate(0, -1),
+    Direction.down: const Coordinate(0, 1),
+    Direction.left: const Coordinate(-1, 0),
+    Direction.right: const Coordinate(1, 0)
   };
 
   static const int HEAD_INDEX = 0;
 
-  // isValidChange checks if the requested direction change
-  // is actually possible.
-  static bool isValidChange(Direction current, Direction requested) {
-    return !((current == Direction.up && requested == Direction.down) ||
-        (current == Direction.down && requested == Direction.up) ||
-        (current == Direction.left && requested == Direction.right) ||
-        (current == Direction.right && requested == Direction.left));
-  }
-
   Direction direction;
   Direction requestedDirection;
 
-  List<Point> body;
+  List<Coordinate> body;
 
   Snake() {
-    body = new List<Point>();
+    body = new List<Coordinate>();
     direction = Direction.right;
     requestedDirection = Direction.right;
   }
 
   Snake.getDefault() {
-    body = new List<Point>();
-    body.add(new Point(1, 0));
-    body.add(new Point(0, 0));
+    body = new List<Coordinate>();
+    body.add(new Coordinate(1, 0));
+    body.add(new Coordinate(0, 0));
     direction = Direction.right;
     requestedDirection = Direction.right;
   }
 
-  Point get head {
+  Coordinate get head {
     return this.body[HEAD_INDEX];
   }
 
@@ -48,26 +39,35 @@ class Snake {
     this.requestedDirection = requested;
   }
 
+  /// check if a requested change of [Direction] is actually possible
+  /// returns false if the requested direction is opposite of the current direction
+  bool _isValidChange() {
+    return !((this.direction == Direction.up &&
+            this.requestedDirection == Direction.down) ||
+        (this.direction == Direction.down &&
+            this.requestedDirection == Direction.up) ||
+        (this.direction == Direction.left &&
+            this.requestedDirection == Direction.right) ||
+        (this.direction == Direction.right &&
+            this.requestedDirection == Direction.left));
+  }
+
   void updateDirection() {
-    if (!Snake.isValidChange(direction, requestedDirection)) {
+    if (!this._isValidChange()) {
       return;
     }
 
     direction = requestedDirection;
   }
 
-  void addNewHead(Point newHead, {bool preserveTail = false}) {
+  void addNewHead(Coordinate newHead, {bool preserveTail = false}) {
     body.insert(HEAD_INDEX, newHead);
     if (!preserveTail) {
       body.removeLast();
     }
   }
 
-  bool contains(Point p) {
-    return this.body.contains(p);
-  }
+  bool contains(Coordinate c) => this.body.contains(c);
 
-  bool headHits(Point p) {
-    return p == this.head;
-  }
+  bool headHits(Coordinate c) => c == this.head;
 }
