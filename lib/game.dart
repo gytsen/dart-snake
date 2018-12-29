@@ -81,7 +81,7 @@ class Game {
   /**
    * Draw a list of `Point`s on the canvas.
    * Note that this method automatically transforms the internal coordinate space
-   * to the coordiates on the canvas.
+   * to the coordinates on the canvas.
    */
   void drawPoints(List<Point> points) {
     for (var point in points) {

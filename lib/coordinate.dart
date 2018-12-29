@@ -10,7 +10,10 @@ class Coordinate {
   int x;
   int y;
 
-  Coordinate(int x, int y);
+  // TODO: Point uses SMI hashing internally, need it?
+  int get hashCode => x.hashCode + y.hashCode;
+
+  Coordinate(this.x, this.y);
 
   Coordinate.fromPoint(Point p) {
     x = p.x;
@@ -19,5 +22,14 @@ class Coordinate {
 
   Coordinate copy() {
     return new Coordinate(x, y);
+  }
+
+  bool operator ==(other) {
+    if (!(other is Coordinate)) return false;
+    return x == other.x && y == other.y;
+  }
+
+  Coordinate operator +(Coordinate other) {
+    return new Coordinate(x + other.x, y + other.y);
   }
 }
