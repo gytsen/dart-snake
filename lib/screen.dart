@@ -108,7 +108,7 @@ class Screen {
     var canvasPoint = getCanvasDrawPoint(coordinate) + this.borderTranspose;
 
     context.fillStyle = color;
-    context.fillRect(canvasPoint.x, canvasPoint.y, boxSize, boxSize);
+    context.fillRect(canvasPoint.x, canvasPoint.y, trimmedBoxSize, trimmedBoxSize);
     context.fillStyle = BLACK;
   }
 
