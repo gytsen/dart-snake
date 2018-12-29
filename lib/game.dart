@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:math';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dart_snake/coordinate.dart';
 import 'package:dart_snake/snake.dart';
@@ -11,12 +12,16 @@ class Game {
   static const int WIDTH = HEIGHT;
 
   static const String BLACK = '#000';
+  static const String RED = '#F00';
+  static const String BROWN = '#B62';
 
   static const int FPS = 5;
   static const int FPS_MILLIS = 1000 ~/ FPS;
   static const Duration TIMEOUT = const Duration(milliseconds: FPS_MILLIS);
 
   Snake _snake;
+
+  List<Coordinate> _walls;
 
   Screen _screen;
 
@@ -31,13 +36,14 @@ class Game {
   /// the player with a nice game over state.
   VoidCallback _gameOverCallback;
 
-  Game(VoidCallback cb) {
+  Game(VoidCallback cb, {String wallJson = '[[4,4], [4,5]]'}) {
     var output = querySelector('#output');
     _screen = new Screen(output);
 
     _random = new Random();
 
     _snake = Snake.getDefault();
+    _walls = parseWalls(wallJson);
     _apple = generateApple();
 
     _gameOverCallback = cb;
@@ -91,7 +97,7 @@ class Game {
 
     head = _screen.wrap(head);
 
-    if (_snake.body.contains(head)) {
+    if (isGameOver(head)) {
       _timer.cancel();
       _gameOverCallback();
     }
@@ -103,9 +109,26 @@ class Game {
 
     _snake.addNewHead(head, preserveTail: preserveTail);
 
+    _screen.drawCoordinates(_walls, color: BROWN);
     _screen.drawCoordinates(_snake.body);
-    _screen.drawCoordinate(_apple, color: '#F00');
+    _screen.drawCoordinate(_apple, color: RED);
   }
+
+  List<Coordinate> parseWalls(String wallsJson) {
+    var walls = new List<Coordinate>();
+    var json = jsonDecode(wallsJson) as List;
+    for (var wall in json) {
+      if (wall.length != 2) {
+        throw new ArgumentError("Wall JSON must use arrays of exactly size 2");
+      }
+      var wallCoordinate = new Coordinate(wall[0], wall[1]);
+      walls.add(wallCoordinate);
+    }
+    return walls;
+  }
+
+  bool isGameOver(Coordinate head) =>
+      _snake.contains(head) || _walls.contains(head);
 
   Coordinate newSnakeHead() {
     Coordinate head = _snake.head.copy();

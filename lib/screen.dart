@@ -93,9 +93,9 @@ class Screen {
   /// Draw a list of [Coordinate]s on the canvas.
   /// Note that this method automatically transforms the coordinates
   /// to [Point]s on the canvas.
-  void drawCoordinates(List<Coordinate> coordinates) {
+  void drawCoordinates(List<Coordinate> coordinates, {String color = '#000'}) {
     for (var coordinate in coordinates) {
-      drawCoordinate(coordinate);
+      drawCoordinate(coordinate, color: color);
     }
   }
 
