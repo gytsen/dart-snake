@@ -15,20 +15,17 @@ class Screen {
 
   int height;
   int width;
-  int scale;
+  int boxSize;
 
   int borderSize;
   Point borderTranspose;
 
   CanvasRenderingContext2D get context => canvas.context2D;
 
-  int get boxSize => canvas.width ~/ width;
-
   int get trimmedBoxSize => boxSize - borderSize;
 
-  // TODO: this doesn't support rectangular spaces yet
   Screen(HtmlElement output,
-      {int height = 24, int width = 24, int borderSize = 3, int scale = 20}) {
+      {int height = 24, int width = 24, int borderSize = 3, int boxSize = 20}) {
     if (output == null) {
       throw new ArgumentError("output element must not be null");
     }
@@ -36,17 +33,17 @@ class Screen {
     this.output = output;
     this.height = height;
     this.width = width;
-    this.scale = scale;
+    this.boxSize = boxSize;
     this.borderSize = borderSize;
     this.borderTranspose = new Point(borderSize, borderSize);
 
     canvas = new CanvasElement(
-        width: this.width * scale, height: this.height * scale);
+        width: this.width * boxSize, height: this.height * boxSize);
     output.append(canvas);
   }
 
   Screen.fromId(String selector,
-      {int height = 24, int width = 24, int borderSize = 3, int scale = 20}) {
+      {int height = 24, int width = 24, int borderSize = 3, int boxSize = 20}) {
     if (selector == null) {
       throw new ArgumentError("selector must not be null");
     } else if (!selector.startsWith('#')) {
@@ -57,13 +54,13 @@ class Screen {
 
     this.height = height;
     this.width = width;
-    this.scale = scale;
+    this.boxSize = boxSize;
 
     this.borderSize = borderSize;
     this.borderTranspose = new Point(borderSize, borderSize);
 
     canvas = new CanvasElement(
-        width: this.width * scale, height: this.height * scale);
+        width: this.width * boxSize, height: this.height * boxSize);
     output.append(canvas);
   }
 
@@ -108,7 +105,8 @@ class Screen {
     var canvasPoint = getCanvasDrawPoint(coordinate) + this.borderTranspose;
 
     context.fillStyle = color;
-    context.fillRect(canvasPoint.x, canvasPoint.y, trimmedBoxSize, trimmedBoxSize);
+    context.fillRect(
+        canvasPoint.x, canvasPoint.y, trimmedBoxSize, trimmedBoxSize);
     context.fillStyle = BLACK;
   }
 
