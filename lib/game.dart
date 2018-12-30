@@ -1,11 +1,11 @@
 import 'dart:html';
 import 'dart:math';
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:dart_snake/coordinate.dart';
 import 'package:dart_snake/snake.dart';
 import 'package:dart_snake/screen.dart';
+import 'package:dart_snake/wall_parser.dart';
 
 class Game {
   static const int HEIGHT = 24;
@@ -36,14 +36,30 @@ class Game {
   /// the player with a nice game over state.
   VoidCallback _gameOverCallback;
 
-  Game(VoidCallback cb, {String wallJson = '[[4,4], [4,5]]'}) {
+  // TODO: remove these queryselectors, pass elements instead
+  Game(VoidCallback cb) {
     var output = querySelector('#output');
     _screen = new Screen(output);
 
     _random = new Random();
 
     _snake = Snake.getDefault();
-    _walls = parseWalls(wallJson);
+    _walls = new List<Coordinate>();
+    _apple = generateApple();
+
+    _gameOverCallback = cb;
+
+    document.onKeyPress.listen(handleKeypress);
+  }
+
+  Game.withLevel(VoidCallback cb, String level) {
+    var output = querySelector('#output');
+    _screen = new Screen(output);
+
+    _random = new Random();
+
+    _snake = Snake.getDefault();
+    _walls = WallParser.decode(level);
     _apple = generateApple();
 
     _gameOverCallback = cb;
@@ -112,19 +128,6 @@ class Game {
     _screen.drawCoordinates(_walls, color: BROWN);
     _screen.drawCoordinates(_snake.body);
     _screen.drawCoordinate(_apple, color: RED);
-  }
-
-  List<Coordinate> parseWalls(String wallsJson) {
-    var walls = new List<Coordinate>();
-    var json = jsonDecode(wallsJson) as List;
-    for (var wall in json) {
-      if (wall.length != 2) {
-        throw new ArgumentError("Wall JSON must use arrays of exactly size 2");
-      }
-      var wallCoordinate = new Coordinate(wall[0], wall[1]);
-      walls.add(wallCoordinate);
-    }
-    return walls;
   }
 
   bool isGameOver(Coordinate head) =>
