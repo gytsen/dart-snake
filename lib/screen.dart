@@ -6,7 +6,6 @@ import 'package:dart_snake/coordinate.dart';
 /// [Screen] implements a grid system for the snake game to be played on
 /// and handles the transformation logic needed to translate from [Game]
 /// coordinates to actual canvas coordinates.
-/// TODO: move the raw draw calls from game.dart here
 class Screen {
   static const String BLACK = '#000';
 
@@ -102,11 +101,12 @@ class Screen {
   /// Draw a single [Coordinate] on the canvas.
   /// The coordinate is automatically converted to a point on the canvas
   void drawCoordinate(Coordinate coordinate, {String color = '#000'}) {
-    var canvasPoint = getCanvasDrawPoint(coordinate) + this.borderTranspose;
+    var canvasPoint = getCanvasDrawPoint(coordinate);
+    var borderedCanvasPoint = canvasPoint + this.borderTranspose;
 
     context.fillStyle = color;
-    context.fillRect(
-        canvasPoint.x, canvasPoint.y, trimmedBoxSize, trimmedBoxSize);
+    context.fillRect(borderedCanvasPoint.x, borderedCanvasPoint.y,
+        trimmedBoxSize, trimmedBoxSize);
     context.fillStyle = BLACK;
   }
 
@@ -118,5 +118,9 @@ class Screen {
     assert(c.x >= 0 && c.x <= this.width);
     assert(c.y >= 0 && c.y <= this.height);
     return new Point(c.x * boxSize, c.y * boxSize);
+  }
+
+  Coordinate getCoordinateFromCanvas(Point p) {
+    return new Coordinate(p.x ~/ boxSize, p.y ~/ boxSize);
   }
 }
