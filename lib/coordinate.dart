@@ -13,6 +13,8 @@ class Coordinate {
   // TODO: Point uses SMI hashing internally, need it?
   int get hashCode => x.hashCode + y.hashCode;
 
+  String toString() => 'Coordinate($x,$y)';
+
   const Coordinate(int x, int y)
       : this.x = x,
         this.y = y;
