@@ -78,12 +78,21 @@ class Game {
   ///
   /// Next, we have our internal game tick, which in this case also dictates our "FPS".
   /// Thus, we need a periodic timer to handle that case.
-  /// What we now simply do is when the start function is called, is actually create the periodict timer
+  /// What we now simply do is when the start function is called, is actually create the periodic timer
   /// with the animate function as a callback.
 
   void start() {
     _timer = Timer.periodic(TIMEOUT, animate);
   }
+
+  void pause() {
+    _timer.cancel();
+  }
+
+  // null-aware operators FTW
+  bool running() => _timer?.isActive ?? false;
+
+  bool paused() => !running();
 
   /// The animate function simply requests an animation frame,
   /// and passes the actual [gameTick] function
