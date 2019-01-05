@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dart_snake</title>
+    <title>Snake</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.ico">
@@ -13,17 +13,84 @@
 </head>
 
 <body>
-  <div class="colums">
-    <div class="column is-half">
-      <h1>Snake!</h1>
-      <button class="button is-primary is-large" id="start">Start game!</button>
-      <br>
-      <a href="editor.html">click here to go to the editor</a>
+<div class="columns">
+    <div class="column is-one-quarter"></div>
+    <div class="column is-one-quarter">
+        <div class="card">
+            <div class="card-header">
+                <h1 id="title-header" class="title">Play Snake!</h1>
+            </div>
+
+            <div class="card-content">
+
+                <p class="content">
+                    Play a little game of snake! Press the button to start a game.
+                    Use the add map button to upload a map for playing with.
+                    Use the WASD keys to navigate.
+                </p>
+
+                <p class="content">
+                    Snake status: <span id="snake-status" class="tag is-info">Not started</span>
+                </p>
+
+                <div id="pause" class="button-container hidden">
+                    <button id="pause-button" class="button is-primary">pause</button>
+                </div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <td>Score</td>
+                        <td>Snake Length</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td id="snake-score">0</td>
+                        <td id="snake-length">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="button-container">
+                    <button class="button is-primary" id="start-empty">Start game!</button>
+                    <button class="button is-primary" id="start-map">Start with map!</button>
+                </div>
+                <p class="content">
+                    <a href="editor.html">click here to go to the editor</a>
+                </p>
+            </div>
+        </div>
     </div>
-    <div class="column is-half">
-      <div id="output">
+    <div class="column is-one-quarter">
+        <div id="output">
+            <canvas height="480" width="480" id="snake-canvas"></canvas>
+        </div>
     </div>
+</div>
+
+<div id="map-modal" class="modal">
+    <div class="modal-background close-map-modal"></div>
+    <div class="modal-content">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Load a map</p>
+            <button class="delete close-map-modal" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+            <div id="map-notification" class="notification is-danger hidden">
+            <button id="hide-notification" class="delete"></button>
+            It seems your map couldn't be loaded:
+            <p id="map-error"></p>
+        </div>
+            <textarea class="textarea" id="map-textarea" placeholder="Paste your map code here"></textarea>
+        </section>
+        <footer class="modal-card-foot">
+            <button id="load-map" class="button is-success">Save changes</button>
+            <button class="button close-map-modal">Cancel</button>
+        </footer>
+
     </div>
+    <button class="modal-close is-large close-map-modal" aria-label="close"></button>
 </div>
 
 </body>
