@@ -17,6 +17,8 @@ class Snake {
 
   List<Coordinate> body;
 
+  int get size => body.length;
+
   Snake() {
     body = new List<Coordinate>();
     direction = Direction.right;
