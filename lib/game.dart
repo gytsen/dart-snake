@@ -122,7 +122,7 @@ class Game {
 
     _snake.updateDirection();
 
-    Coordinate head = newSnakeHead();
+    Coordinate head = _snake.newHead();
 
     head = _screen.wrap(head);
 
@@ -147,13 +147,6 @@ class Game {
 
   bool isGameOver(Coordinate head) =>
       _snake.contains(head) || _map.contains(head);
-
-  Coordinate newSnakeHead() {
-    Coordinate head = _snake.head.copy();
-
-    head += Snake.directionToPoint[_snake.direction];
-    return head;
-  }
 
   Coordinate generateApple() {
     var apple;

@@ -12,12 +12,24 @@ class Snake {
 
   static const int HEAD_INDEX = 0;
 
+  /// The direction system in the snake might seem weird, it's pretty straightforward:
+  /// A user might button mash between game ticks. If we actually change direction on
+  /// those keypresses instead of on each game tick, we could actually be game-over in
+  /// between ticks.
+  ///
+  /// So instead, maintain 2 directions: the current direction and the
+  /// requested direction.
+  ///
+  /// * requested direction: can change at any time, as many times as possible and not
+  ///   subject to any sort of check or verification.
+  ///
+  /// * actual direction: changes only once per tick, and only changes if the requested
+  ///   direction is not in direct opposition of the current direction.
+  ///
   Direction direction;
   Direction requestedDirection;
 
   List<Coordinate> body;
-
-  int get size => body.length;
 
   Snake() {
     body = new List<Coordinate>();
@@ -33,13 +45,16 @@ class Snake {
     requestedDirection = Direction.right;
   }
 
-  Coordinate get head {
-    return this.body[HEAD_INDEX];
-  }
+  int get size => body.length;
 
-  void requestChangeDirection(Direction requested) {
-    this.requestedDirection = requested;
-  }
+  Coordinate get head => this.body[HEAD_INDEX];
+
+  bool contains(Coordinate c) => this.body.contains(c);
+
+  bool headHits(Coordinate c) => c == this.head;
+
+  void requestChangeDirection(Direction requested) =>
+      this.requestedDirection = requested;
 
   /// check if a requested change of [Direction] is actually possible
   /// returns false if the requested direction is opposite of the current direction
@@ -54,6 +69,8 @@ class Snake {
             this.requestedDirection == Direction.left));
   }
 
+  /// Update the direction to the direction requested. An invalid change is simply
+  /// ignored until the next game tick.
   void updateDirection() {
     if (!this._isValidChange()) {
       return;
@@ -62,14 +79,21 @@ class Snake {
     direction = requestedDirection;
   }
 
+  /// Create a new [Coordinate] for the snake to represent
+  /// its new head. The head is returned instead of added directly
+  /// because the caller might need to further modify the head
+  /// before it's added to the snake.
+  Coordinate newHead() {
+    Coordinate head = this.head.copy();
+
+    head += Snake.directionToPoint[this.direction];
+    return head;
+  }
+
   void addNewHead(Coordinate newHead, {bool preserveTail = false}) {
     body.insert(HEAD_INDEX, newHead);
     if (!preserveTail) {
       body.removeLast();
     }
   }
-
-  bool contains(Coordinate c) => this.body.contains(c);
-
-  bool headHits(Coordinate c) => c == this.head;
 }
