@@ -10,6 +10,9 @@ Set<Coordinate> map;
 
 SpanElement wallCount;
 
+/// Translate a mouse click on a canvas from canvas coordinates
+/// to a canvas [Point]. This function takes into account the
+/// possibility that the canvas might not be entirely visible.
 Point getCanvasPosition(CanvasElement canvas, MouseEvent e) {
   var rect = canvas.getBoundingClientRect();
   var x = e.client.x - rect.left;
@@ -64,9 +67,12 @@ void main() {
   wallCount = document.querySelector('#wall-count');
   var resetButton = document.querySelector('#reset');
   var saveButton = document.querySelector('#download-map');
+
   saveButton.onClick.listen(save);
   resetButton.onClick.listen(reset);
+
   screen = new Screen(canvas);
   map = new Set<Coordinate>();
+
   screen.canvas.onClick.listen(onClick);
 }

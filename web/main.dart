@@ -58,9 +58,8 @@ void onStartClick(MouseEvent e) {
   }
 
   var canvas = document.querySelector('#snake-canvas');
-  if (game == null) {
-    game = new Game(canvas, onGameOver, onScore);
-  }
+
+  game ??= new Game(canvas, gameOver, onScore);
 
   document.onKeyPress.listen(game.handleKeypress);
   changeStatusToAlive(snakeStatus);
@@ -73,25 +72,19 @@ GameMap loadMap(TextAreaElement textArea) {
   return GameMap.fromJson(json);
 }
 
-void onMapConfirm(MouseEvent e) {
-  try {
-    GameMap map = loadMap(mapTextArea);
-    var canvas = document.querySelector('#snake-canvas');
-    if (game == null) {
-      game = new Game.withMap(canvas, onGameOver, onScore, map);
-    }
-
-    document.onKeyPress.listen(game.handleKeypress);
-    changeStatusToAlive(snakeStatus);
-    togglePauseContainer();
-    game.start();
-  } catch (error) {
-    mapErrorText.text = error.toString();
-    mapNotification.classes.remove('hidden');
-  }
+void showMapError(String error) {
+  mapErrorText.text = error;
+  mapNotification.classes.remove('hidden');
 }
 
-void onMapStartClick(MouseEvent e) {
+/// starting a game with a map is a bit more involved,
+/// since we require a JSON file and due to security reasons
+/// we can't "upload" a file from disk.
+///
+/// Instead we show a modal with a textarea where the user
+/// pastes the raw JSON, which will then parse on button press.
+/// It's a little more involved, but right now the easiest way.
+void showMapPicker(MouseEvent e) {
   if (running()) {
     return;
   }
@@ -99,7 +92,26 @@ void onMapStartClick(MouseEvent e) {
   mapModal.classes.add('is-active');
 }
 
-void onGameOver() {
+void confirmMap(MouseEvent e) {
+  GameMap map = null;
+
+  try {
+    map = loadMap(mapTextArea);
+  } catch (error) {
+    showMapError(error.toString());
+  }
+
+  var canvas = document.querySelector('#snake-canvas');
+
+  game ??= new Game.withMap(canvas, gameOver, onScore, map);
+
+  document.onKeyPress.listen(game.handleKeypress);
+  changeStatusToAlive(snakeStatus);
+  togglePauseContainer();
+  game.start();
+}
+
+void gameOver() {
   changeStatusToDead(snakeStatus);
   togglePauseContainer();
   // fully reset the game state by forcing
@@ -112,14 +124,13 @@ void onScore(int snakeLength) {
   scoreElement?.text = (snakeLength - 2).toString();
 }
 
-void closeModal(MouseEvent e) {
-  mapModal.classes.remove('is-active');
-}
+void closeModal(MouseEvent e) => mapModal.classes.remove('is-active');
 
-void hideNotification(MouseEvent e) {
-  mapNotification.classes.add('hidden');
-}
+void hideNotification(MouseEvent e) => mapNotification.classes.add('hidden');
 
+/// Annoying, yes, but best viewed as a simple
+/// "constructor" that selects all relevant elements and
+/// links the event listeners to them.
 void main() {
   startButton = document.querySelector('#start-empty');
   startWithMapButton = document.querySelector('#start-map');
@@ -134,13 +145,14 @@ void main() {
   mapErrorText = document.querySelector('#map-error');
   loadMapButton = document.querySelector('#load-map');
 
+  // add the event listener to all buttons that close a modal
   for (var element in document.querySelectorAll('.close-map-modal')) {
     element.onClick.listen(closeModal);
   }
 
   startButton.onClick.listen(onStartClick);
-  startWithMapButton.onClick.listen(onMapStartClick);
+  startWithMapButton.onClick.listen(showMapPicker);
   pauseButton.onClick.listen(onPauseClick);
-  loadMapButton.onClick.listen(onMapConfirm);
+  loadMapButton.onClick.listen(confirmMap);
   hideNotificationButton.onClick.listen(hideNotification);
 }
