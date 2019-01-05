@@ -10,8 +10,6 @@ class Screen {
   static const String BLACK = '#000';
 
   CanvasElement canvas;
-  HtmlElement output;
-
   int height;
   int width;
   int boxSize;
@@ -23,44 +21,22 @@ class Screen {
 
   int get trimmedBoxSize => boxSize - borderSize;
 
-  Screen(HtmlElement output,
-      {int height = 24, int width = 24, int borderSize = 3, int boxSize = 20}) {
-    if (output == null) {
-      throw new ArgumentError("output element must not be null");
+  Screen(CanvasElement canvas, {int borderSize = 3, int boxSize = 20}) {
+    if (canvas == null || canvas is! CanvasElement) {
+      throw new ArgumentError("Must pass a CanvasElement!");
+    } else if (canvas.height % boxSize != 0 || canvas.width % boxSize != 0) {
+      throw new ArgumentError(
+          "${canvas.height} or ${canvas.width} is not divisible by ${boxSize}");
     }
 
-    this.output = output;
-    this.height = height;
-    this.width = width;
+    this.height = canvas.height ~/ boxSize;
+    this.width = canvas.width ~/ boxSize;
     this.boxSize = boxSize;
     this.borderSize = borderSize;
     this.borderTranspose = new Point(borderSize, borderSize);
-
-    canvas = new CanvasElement(
-        width: this.width * boxSize, height: this.height * boxSize);
-    output.append(canvas);
-  }
-
-  Screen.fromId(String selector,
-      {int height = 24, int width = 24, int borderSize = 3, int boxSize = 20}) {
-    if (selector == null) {
-      throw new ArgumentError("selector must not be null");
-    } else if (!selector.startsWith('#')) {
-      throw new ArgumentError("selector must select an ID");
-    }
-
-    this.output = document.querySelector(selector);
-
-    this.height = height;
-    this.width = width;
-    this.boxSize = boxSize;
-
-    this.borderSize = borderSize;
-    this.borderTranspose = new Point(borderSize, borderSize);
-
-    canvas = new CanvasElement(
-        width: this.width * boxSize, height: this.height * boxSize);
-    output.append(canvas);
+    this.canvas = canvas;
+    // clear any previously drawn stuff on the canvas
+    clear();
   }
 
   /// Small convenience method to clear the canvas quickly
@@ -92,7 +68,8 @@ class Screen {
   /// Draw a list of [Coordinate]s on the canvas.
   /// Note that this method automatically transforms the coordinates
   /// to [Point]s on the canvas.
-  void drawCoordinates(List<Coordinate> coordinates, {String color = '#000'}) {
+  void drawCoordinates(Iterable<Coordinate> coordinates,
+      {String color = '#000'}) {
     for (var coordinate in coordinates) {
       drawCoordinate(coordinate, color: color);
     }

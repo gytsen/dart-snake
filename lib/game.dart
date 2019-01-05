@@ -5,7 +5,9 @@ import 'dart:async';
 import 'package:dart_snake/coordinate.dart';
 import 'package:dart_snake/snake.dart';
 import 'package:dart_snake/screen.dart';
-import 'package:dart_snake/wall_parser.dart';
+import 'package:dart_snake/game_map.dart';
+
+typedef void ScoreCallback(int snakeLength);
 
 class Game {
   static const int HEIGHT = 24;
@@ -21,7 +23,7 @@ class Game {
 
   Snake _snake;
 
-  List<Coordinate> _walls;
+  GameMap _map;
 
   Screen _screen;
 
@@ -36,35 +38,37 @@ class Game {
   /// the player with a nice game over state.
   VoidCallback _gameOverCallback;
 
-  // TODO: remove these queryselectors, pass elements instead
-  Game(VoidCallback cb) {
-    var output = querySelector('#output');
-    _screen = new Screen(output);
+  /// A user supplied callback that gets called whenever the user scores
+  /// a point (i.e. eats the apple). It passes the current length of the snake
+  /// so that the user can present hi-scores or something should the user wish.
+  ScoreCallback _scoreCallback;
+
+  Game(CanvasElement canvas, VoidCallback gameOverCallback,
+      ScoreCallback scoreCallback) {
+    _screen = new Screen(canvas);
 
     _random = new Random();
 
     _snake = Snake.getDefault();
-    _walls = new List<Coordinate>();
+    _map = GameMap.empty();
     _apple = generateApple();
 
-    _gameOverCallback = cb;
-
-    document.onKeyPress.listen(handleKeypress);
+    _gameOverCallback = gameOverCallback;
+    _scoreCallback = scoreCallback;
   }
 
-  Game.withLevel(VoidCallback cb, String level) {
-    var output = querySelector('#output');
-    _screen = new Screen(output);
+  Game.withMap(CanvasElement canvas, VoidCallback gameOverCallback,
+      ScoreCallback scoreCallback, GameMap map) {
+    _screen = new Screen(canvas);
 
     _random = new Random();
 
     _snake = Snake.getDefault();
-    _walls = WallParser.decode(level);
+    _map = map;
     _apple = generateApple();
 
-    _gameOverCallback = cb;
-
-    document.onKeyPress.listen(handleKeypress);
+    _gameOverCallback = gameOverCallback;
+    _scoreCallback = scoreCallback;
   }
 
   /// So this series of functions seems a bit weird, but that has to do with the
@@ -121,17 +125,19 @@ class Game {
     if (head == _apple) {
       _apple = generateApple();
       preserveTail = true;
+      // remember to add the new head to the size
+      _scoreCallback(_snake.size + 1);
     }
 
     _snake.addNewHead(head, preserveTail: preserveTail);
 
-    _screen.drawCoordinates(_walls, color: BROWN);
+    _screen.drawCoordinates(_map.walls, color: BROWN);
     _screen.drawCoordinates(_snake.body);
     _screen.drawCoordinate(_apple, color: RED);
   }
 
   bool isGameOver(Coordinate head) =>
-      _snake.contains(head) || _walls.contains(head);
+      _snake.contains(head) || _map.contains(head);
 
   Coordinate newSnakeHead() {
     Coordinate head = _snake.head.copy();
