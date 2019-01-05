@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dart_snake</title>
+    <title>Snake map editor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.ico">
@@ -13,18 +13,40 @@
 </head>
 
 <body>
-        <body>
-                <div class="colums">
-                  <div class="column is-half">
-                    <h1>Snake Map editor</h1>
-                    <button class="button is-primary is-large" id="save">Save Map!</button>
-                    <br>
-                    <a href="index.html">click here to go to the main game</a>
-                  </div>
-                  <div class="column is-half">
-                    <div id="editor">
-                  </div>
-                  </div>
-              </div>
+<div class="columns">
+    <div class="column is-one-quarter"></div>
+    <div class="column is-one-quarter">
+        <div class="card">
+            <div class="card-header">
+                <h1 id="title-header" class="title">Create a snake Map!</h1>
+            </div>
+
+            <div class="card-content">
+
+                <p class="content">
+                    Create a map for the snake game and make it a bit more challenging!
+                    Click on a point on the map to add a wall to it, click again to remove it.
+                </p>
+
+                <p class="content">
+                    Wall count: <span id="wall-count" class="tag is-info">0</span>
+                </p>
+
+                <div class="button-container">
+                    <button class="button is-primary" id="reset">Reset</button>
+                    <button class="button is-primary" id="download-map">Download map</button>
+                </div>
+                <p class="content">
+                    <a href="index.html">click here to go to the game</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="column is-one-quarter">
+        <div id="output">
+            <canvas height="480" width="480" id="map-canvas"></canvas>
+        </div>
+    </div>
+</div>
 </body>
 </html>
