@@ -24,7 +24,8 @@ class Screen {
   Screen(CanvasElement canvas, {int borderSize = 3, int boxSize = 20}) {
     if (canvas == null || canvas is! CanvasElement) {
       throw new ArgumentError("Must pass a CanvasElement!");
-    } else if (canvas.height % boxSize != 0 || canvas.width % boxSize != 0) {
+    } else if (canvas.height.remainder(boxSize) != 0 ||
+        canvas.width.remainder(boxSize) != 0) {
       throw new ArgumentError(
           "${canvas.height} or ${canvas.width} is not divisible by ${boxSize}");
     }
@@ -97,6 +98,8 @@ class Screen {
     return new Point(c.x * boxSize, c.y * boxSize);
   }
 
+  /// Convert the given [Point] to a [Coordinate]. Useful for click handlers
+  /// to see where in the grid a user clicked.
   Coordinate getCoordinateFromCanvas(Point p) {
     return new Coordinate(p.x ~/ boxSize, p.y ~/ boxSize);
   }
