@@ -26,19 +26,19 @@ class Snake {
   /// * actual direction: changes only once per tick, and only changes if the requested
   ///   direction is not in direct opposition of the current direction.
   ///
-  Direction direction;
-  Direction requestedDirection;
+  late Direction direction;
+  late Direction requestedDirection;
 
-  List<Coordinate> body;
+  late List<Coordinate> body;
 
   Snake() {
-    body = new List<Coordinate>();
+    body = new List.empty(growable: true);
     direction = Direction.right;
     requestedDirection = Direction.right;
   }
 
   Snake.getDefault() {
-    body = new List<Coordinate>();
+    body = new List.empty(growable: true);
     body.add(new Coordinate(1, 0));
     body.add(new Coordinate(0, 0));
     direction = Direction.right;
@@ -86,7 +86,7 @@ class Snake {
   Coordinate newHead() {
     Coordinate head = this.head.copy();
 
-    head += Snake.directionToPoint[this.direction];
+    head += Snake.directionToPoint[this.direction]!;
     return head;
   }
 

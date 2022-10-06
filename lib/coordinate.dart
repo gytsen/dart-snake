@@ -10,7 +10,6 @@ class Coordinate {
   final int x;
   final int y;
 
-  // TODO: Point uses SMI hashing internally, need it?
   int get hashCode => x.hashCode + y.hashCode;
 
   String toString() => 'Coordinate($x,$y)';

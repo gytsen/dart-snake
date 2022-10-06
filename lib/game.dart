@@ -21,29 +21,29 @@ class Game {
   static const int FPS_MILLIS = 1000 ~/ FPS;
   static const Duration TIMEOUT = const Duration(milliseconds: FPS_MILLIS);
 
-  Snake _snake;
+  late Snake _snake;
 
-  GameMap _map;
+  late GameMap _map;
 
-  Screen _screen;
+  late Screen _screen;
 
-  Coordinate _apple;
+  late Coordinate _apple;
 
-  Random _random;
+  late Random _random;
 
-  Timer _timer;
+  Timer? _timer;
 
   /// A user supplied callback that gets called on game over
   /// this function should handle and UI changes needed to present
   /// the player with a nice game over state.
-  VoidCallback _gameOverCallback;
+  late VoidCallback _gameOverCallback;
 
   /// A user supplied callback that gets called whenever the user scores
   /// a point (i.e. eats the apple). It passes the current length of the snake
   /// so that the user can present hi-scores or something should the user wish.
-  ScoreCallback _scoreCallback;
+  late ScoreCallback _scoreCallback;
 
-  Game(CanvasElement canvas, VoidCallback gameOverCallback,
+  Game(CanvasElement? canvas, VoidCallback gameOverCallback,
       ScoreCallback scoreCallback) {
     _screen = new Screen(canvas);
 
@@ -86,7 +86,7 @@ class Game {
   }
 
   void pause() {
-    _timer.cancel();
+    _timer?.cancel();
   }
 
   // null-aware operators FTW
@@ -127,7 +127,7 @@ class Game {
     head = _screen.wrap(head);
 
     if (isGameOver(head)) {
-      _timer.cancel();
+      _timer?.cancel();
       _gameOverCallback();
     }
 
@@ -149,7 +149,7 @@ class Game {
       _snake.contains(head) || _map.contains(head);
 
   Coordinate generateApple() {
-    var apple;
+    Coordinate apple;
 
     do {
       apple = new Coordinate(

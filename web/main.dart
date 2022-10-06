@@ -2,22 +2,22 @@ import 'dart:html';
 import 'package:dart_snake/game.dart';
 import 'package:dart_snake/game_map.dart';
 
-TableCellElement snakeLengthElement;
-TableCellElement scoreElement;
-SpanElement snakeStatus;
+TableCellElement? snakeLengthElement;
+TableCellElement? scoreElement;
+SpanElement? snakeStatus;
 
-ButtonElement startButton;
-ButtonElement startWithMapButton;
-ButtonElement pauseButton;
-ButtonElement loadMapButton;
-ButtonElement hideNotificationButton;
+ButtonElement? startButton;
+ButtonElement? startWithMapButton;
+ButtonElement? pauseButton;
+ButtonElement? loadMapButton;
+ButtonElement? hideNotificationButton;
 
-Element mapModal;
-TextAreaElement mapTextArea;
-ParagraphElement mapErrorText;
-DivElement mapNotification;
+Element? mapModal;
+TextAreaElement? mapTextArea;
+ParagraphElement? mapErrorText;
+DivElement? mapNotification;
 
-Game game;
+Game? game;
 
 void changeStatusToAlive(SpanElement snakeStatus) {
   List<String> classesToToggle = ['is-info', 'is-warning'];
@@ -34,17 +34,21 @@ void changeStatusToDead(SpanElement snakeStatus) {
 }
 
 void togglePauseContainer() {
-  var pauseContainer = document.querySelector('#pause');
+  var pauseContainer = document.querySelector('#pause')!;
   pauseContainer.classes.toggle('hidden');
 }
 
 void onPauseClick(MouseEvent e) {
-  if (game.paused()) {
-    game.start();
-    pauseButton.text = "Pause";
+  if (game == null) {
+    return;
+  }
+
+  if (game!.paused()) {
+    game?.start();
+    pauseButton!.text = "Pause";
   } else {
-    game.pause();
-    pauseButton.text = "Unpause";
+    game?.pause();
+    pauseButton!.text = "Unpause";
   }
 }
 
@@ -59,22 +63,22 @@ void onStartClick(MouseEvent e) {
 
   var canvas = document.querySelector('#snake-canvas');
 
-  game ??= new Game(canvas, gameOver, onScore);
+  game ??= new Game(canvas as CanvasElement?, gameOver, onScore);
 
-  document.onKeyPress.listen(game.handleKeypress);
-  changeStatusToAlive(snakeStatus);
+  document.onKeyPress.listen(game!.handleKeypress);
+  changeStatusToAlive(snakeStatus!);
   togglePauseContainer();
-  game.start();
+  game!.start();
 }
 
 GameMap loadMap(TextAreaElement textArea) {
-  String json = textArea.value;
+  String json = textArea.value!;
   return GameMap.fromJson(json);
 }
 
 void showMapError(String error) {
-  mapErrorText.text = error;
-  mapNotification.classes.remove('hidden');
+  mapErrorText!.text = error;
+  mapNotification!.classes.remove('hidden');
 }
 
 /// starting a game with a map is a bit more involved,
@@ -89,30 +93,35 @@ void showMapPicker(MouseEvent e) {
     return;
   }
 
-  mapModal.classes.add('is-active');
+  mapModal!.classes.add('is-active');
 }
 
 void confirmMap(MouseEvent e) {
-  GameMap map = null;
+  GameMap? map = null;
 
   try {
-    map = loadMap(mapTextArea);
+    map = loadMap(mapTextArea!);
   } catch (error) {
     showMapError(error.toString());
+    return;
   }
 
   var canvas = document.querySelector('#snake-canvas');
+  if (canvas == null) {
+    showMapError("no canvas present?");
+    return;
+  }
 
-  game ??= new Game.withMap(canvas, gameOver, onScore, map);
+  game ??= new Game.withMap(canvas as CanvasElement, gameOver, onScore, map);
 
-  document.onKeyPress.listen(game.handleKeypress);
-  changeStatusToAlive(snakeStatus);
+  document.onKeyPress.listen(game!.handleKeypress);
+  changeStatusToAlive(snakeStatus!);
   togglePauseContainer();
-  game.start();
+  game!.start();
 }
 
 void gameOver() {
-  changeStatusToDead(snakeStatus);
+  changeStatusToDead(snakeStatus!);
   togglePauseContainer();
   // fully reset the game state by forcing
   // the start button to create a new game
@@ -124,35 +133,35 @@ void onScore(int snakeLength) {
   scoreElement?.text = (snakeLength - 2).toString();
 }
 
-void closeModal(MouseEvent e) => mapModal.classes.remove('is-active');
+void closeModal(MouseEvent e) => mapModal!.classes.remove('is-active');
 
-void hideNotification(MouseEvent e) => mapNotification.classes.add('hidden');
+void hideNotification(MouseEvent e) => mapNotification!.classes.add('hidden');
 
 /// Annoying, yes, but best viewed as a simple
 /// "constructor" that selects all relevant elements and
 /// links the event listeners to them.
 void main() {
-  startButton = document.querySelector('#start-empty');
-  startWithMapButton = document.querySelector('#start-map');
-  pauseButton = document.querySelector('#pause-button');
-  snakeLengthElement = document.querySelector('#snake-length');
-  scoreElement = document.querySelector('#snake-score');
-  snakeStatus = document.querySelector('#snake-status');
+  startButton = document.querySelector('#start-empty') as ButtonElement?;
+  startWithMapButton = document.querySelector('#start-map') as ButtonElement?;
+  pauseButton = document.querySelector('#pause-button') as ButtonElement?;
+  snakeLengthElement = document.querySelector('#snake-length') as TableCellElement?;
+  scoreElement = document.querySelector('#snake-score') as TableCellElement?;
+  snakeStatus = document.querySelector('#snake-status') as SpanElement?;
   mapModal = document.querySelector('#map-modal');
-  mapTextArea = document.querySelector('#map-textarea');
-  mapNotification = document.querySelector('#map-notification');
-  hideNotificationButton = document.querySelector('#hide-notification');
-  mapErrorText = document.querySelector('#map-error');
-  loadMapButton = document.querySelector('#load-map');
+  mapTextArea = document.querySelector('#map-textarea') as TextAreaElement?;
+  mapNotification = document.querySelector('#map-notification') as DivElement?;
+  hideNotificationButton = document.querySelector('#hide-notification') as ButtonElement?;
+  mapErrorText = document.querySelector('#map-error') as ParagraphElement?;
+  loadMapButton = document.querySelector('#load-map') as ButtonElement?;
 
   // add the event listener to all buttons that close a modal
   for (var element in document.querySelectorAll('.close-map-modal')) {
     element.onClick.listen(closeModal);
   }
 
-  startButton.onClick.listen(onStartClick);
-  startWithMapButton.onClick.listen(showMapPicker);
-  pauseButton.onClick.listen(onPauseClick);
-  loadMapButton.onClick.listen(confirmMap);
-  hideNotificationButton.onClick.listen(hideNotification);
+  startButton!.onClick.listen(onStartClick);
+  startWithMapButton!.onClick.listen(showMapPicker);
+  pauseButton!.onClick.listen(onPauseClick);
+  loadMapButton!.onClick.listen(confirmMap);
+  hideNotificationButton!.onClick.listen(hideNotification);
 }

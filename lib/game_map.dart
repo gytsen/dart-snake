@@ -7,9 +7,9 @@ class GameMap {
   static const int WALL_X_IDX = 0;
   static const int WALL_Y_IDX = 1;
 
-  int height;
-  int width;
-  Set<Coordinate> _walls;
+  late int height;
+  late int width;
+  late Set<Coordinate> _walls;
 
   GameMap(this.height, this.width, this._walls);
 
@@ -24,7 +24,7 @@ class GameMap {
 
   bool contains(Coordinate c) => _walls.contains(c);
 
-  Iterable<Coordinate> get walls => _walls;
+  Set<Coordinate> get walls => _walls;
 
   GameMap.fromJson(String json) {
     var walls = new Set<Coordinate>();
@@ -67,10 +67,10 @@ class GameMap {
   }
 
   static String encode(int width, int height, Set<Coordinate> walls) {
-    List<List<int>> encodedWalls = new List();
+    List<List<int>> encodedWalls = List.empty(growable: true);
 
     for (var wall in walls) {
-      var entry = new List<int>(WALL_COORDINATE_SIZE);
+      List<int> entry = List.empty(growable: true);
       entry[WALL_X_IDX] = wall.x;
       entry[WALL_Y_IDX] = wall.y;
       encodedWalls.add(entry);

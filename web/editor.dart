@@ -5,10 +5,10 @@ import 'package:dart_snake/screen.dart';
 import 'package:dart_snake/coordinate.dart';
 import 'package:dart_snake/game_map.dart';
 
-Screen screen;
-Set<Coordinate> map;
+late Screen screen;
+late Set<Coordinate> map;
 
-SpanElement wallCount;
+SpanElement? wallCount;
 
 /// Translate a mouse click on a canvas from canvas coordinates
 /// to a canvas [Point]. This function takes into account the
@@ -31,7 +31,7 @@ void onClick(MouseEvent e) {
 
   screen.clear();
   screen.drawCoordinates(map, color: '#B62');
-  wallCount.text = map.length.toString();
+  wallCount!.text = map.length.toString();
 }
 
 void save(MouseEvent e) {
@@ -49,7 +49,7 @@ void download(String filename, String content) {
     ..setAttribute('download', filename)
     ..style.display = 'none';
 
-  document.body.append(element);
+  document.body?.append(element);
 
   element.click();
 
@@ -59,14 +59,14 @@ void download(String filename, String content) {
 void reset(MouseEvent e) {
   screen.clear();
   map.clear();
-  wallCount.text = map.length.toString();
+  wallCount?.text = map.length.toString();
 }
 
 void main() {
-  CanvasElement canvas = document.querySelector('#map-canvas');
-  wallCount = document.querySelector('#wall-count');
-  var resetButton = document.querySelector('#reset');
-  var saveButton = document.querySelector('#download-map');
+  CanvasElement? canvas = document.querySelector('#map-canvas') as CanvasElement?;
+  wallCount = document.querySelector('#wall-count') as SpanElement?;
+  var resetButton = document.querySelector('#reset')!;
+  var saveButton = document.querySelector('#download-map')!;
 
   saveButton.onClick.listen(save);
   resetButton.onClick.listen(reset);

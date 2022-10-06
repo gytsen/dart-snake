@@ -1,5 +1,4 @@
 import 'dart:html';
-import 'dart:math';
 
 import 'package:dart_snake/coordinate.dart';
 
@@ -9,29 +8,29 @@ import 'package:dart_snake/coordinate.dart';
 class Screen {
   static const String BLACK = '#000';
 
-  CanvasElement canvas;
-  int height;
-  int width;
-  int boxSize;
+  late CanvasElement canvas;
+  late int height;
+  late int width;
+  late int boxSize;
 
-  int borderSize;
-  Point borderTranspose;
+  late int borderSize;
+  late Point borderTranspose;
 
   CanvasRenderingContext2D get context => canvas.context2D;
 
   int get trimmedBoxSize => boxSize - borderSize;
 
-  Screen(CanvasElement canvas, {int borderSize = 3, int boxSize = 20}) {
-    if (canvas == null || canvas is! CanvasElement) {
+  Screen(CanvasElement? canvas, {int borderSize = 3, int boxSize = 20}) {
+    if (canvas == null) {
       throw new ArgumentError("Must pass a CanvasElement!");
-    } else if (canvas.height.remainder(boxSize) != 0 ||
-        canvas.width.remainder(boxSize) != 0) {
+    } else if (canvas.height?.remainder(boxSize) != 0 ||
+        canvas.width?.remainder(boxSize) != 0) {
       throw new ArgumentError(
           "${canvas.height} or ${canvas.width} is not divisible by ${boxSize}");
     }
 
-    this.height = canvas.height ~/ boxSize;
-    this.width = canvas.width ~/ boxSize;
+    this.height = canvas.height! ~/ boxSize;
+    this.width = canvas.width! ~/ boxSize;
     this.boxSize = boxSize;
     this.borderSize = borderSize;
     this.borderTranspose = new Point(borderSize, borderSize);
@@ -41,7 +40,7 @@ class Screen {
   }
 
   /// Small convenience method to clear the canvas quickly
-  void clear() => context.clearRect(0, 0, canvas.width, canvas.height);
+  void clear() => context.clearRect(0, 0, canvas.width!, canvas.height!);
 
   /// wrap the given [Coordinate] around the screen edges
   /// if it would be out of bounds.
