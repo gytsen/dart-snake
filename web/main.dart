@@ -19,14 +19,14 @@ DivElement? mapNotification;
 
 Game? game;
 
-void changeStatusToAlive(SpanElement snakeStatus) {
+void changeStatusToAlive(final SpanElement snakeStatus) {
   List<String> classesToToggle = ['is-info', 'is-warning'];
   snakeStatus.classes.removeAll(classesToToggle);
   snakeStatus.classes.add('is-success');
   snakeStatus.text = "Alive";
 }
 
-void changeStatusToDead(SpanElement snakeStatus) {
+void changeStatusToDead(final SpanElement snakeStatus) {
   List<String> classesToToggle = ['is-info', 'is-success'];
   snakeStatus.classes.removeAll(classesToToggle);
   snakeStatus.classes.add('is-warning');
@@ -34,7 +34,7 @@ void changeStatusToDead(SpanElement snakeStatus) {
 }
 
 void togglePauseContainer() {
-  var pauseContainer = document.querySelector('#pause')!;
+  final pauseContainer = document.querySelector('#pause')!;
   pauseContainer.classes.toggle('hidden');
 }
 
@@ -61,7 +61,7 @@ void onStartClick(MouseEvent e) {
     return;
   }
 
-  var canvas = document.querySelector('#snake-canvas');
+  final canvas = document.querySelector('#snake-canvas');
 
   game ??= new Game(canvas as CanvasElement?, gameOver, onScore);
 
@@ -72,7 +72,7 @@ void onStartClick(MouseEvent e) {
 }
 
 GameMap loadMap(TextAreaElement textArea) {
-  String json = textArea.value!;
+  final String json = textArea.value!;
   return GameMap.fromJson(json);
 }
 
@@ -96,7 +96,7 @@ void showMapPicker(MouseEvent e) {
   mapModal!.classes.add('is-active');
 }
 
-void confirmMap(MouseEvent e) {
+void confirmMap(final MouseEvent e) {
   GameMap? map = null;
 
   try {
@@ -106,7 +106,7 @@ void confirmMap(MouseEvent e) {
     return;
   }
 
-  var canvas = document.querySelector('#snake-canvas');
+  final canvas = document.querySelector('#snake-canvas');
   if (canvas == null) {
     showMapError("no canvas present?");
     return;
@@ -128,14 +128,15 @@ void gameOver() {
   game = null;
 }
 
-void onScore(int snakeLength) {
+void onScore(final int snakeLength) {
   snakeLengthElement?.text = snakeLength.toString();
   scoreElement?.text = (snakeLength - 2).toString();
 }
 
-void closeModal(MouseEvent e) => mapModal!.classes.remove('is-active');
+void closeModal(final MouseEvent e) => mapModal!.classes.remove('is-active');
 
-void hideNotification(MouseEvent e) => mapNotification!.classes.add('hidden');
+void hideNotification(final MouseEvent e) =>
+    mapNotification!.classes.add('hidden');
 
 /// Annoying, yes, but best viewed as a simple
 /// "constructor" that selects all relevant elements and
@@ -144,18 +145,20 @@ void main() {
   startButton = document.querySelector('#start-empty') as ButtonElement?;
   startWithMapButton = document.querySelector('#start-map') as ButtonElement?;
   pauseButton = document.querySelector('#pause-button') as ButtonElement?;
-  snakeLengthElement = document.querySelector('#snake-length') as TableCellElement?;
+  snakeLengthElement =
+      document.querySelector('#snake-length') as TableCellElement?;
   scoreElement = document.querySelector('#snake-score') as TableCellElement?;
   snakeStatus = document.querySelector('#snake-status') as SpanElement?;
   mapModal = document.querySelector('#map-modal');
   mapTextArea = document.querySelector('#map-textarea') as TextAreaElement?;
   mapNotification = document.querySelector('#map-notification') as DivElement?;
-  hideNotificationButton = document.querySelector('#hide-notification') as ButtonElement?;
+  hideNotificationButton =
+      document.querySelector('#hide-notification') as ButtonElement?;
   mapErrorText = document.querySelector('#map-error') as ParagraphElement?;
   loadMapButton = document.querySelector('#load-map') as ButtonElement?;
 
   // add the event listener to all buttons that close a modal
-  for (var element in document.querySelectorAll('.close-map-modal')) {
+  for (final element in document.querySelectorAll('.close-map-modal')) {
     element.onClick.listen(closeModal);
   }
 

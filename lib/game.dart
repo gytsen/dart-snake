@@ -21,15 +21,15 @@ class Game {
   static const int FPS_MILLIS = 1000 ~/ FPS;
   static const Duration TIMEOUT = const Duration(milliseconds: FPS_MILLIS);
 
-  late Snake _snake;
+  late final Snake _snake;
 
-  late GameMap _map;
+  late final GameMap _map;
 
-  late Screen _screen;
+  late final Screen _screen;
 
   late Coordinate _apple;
 
-  late Random _random;
+  late final Random _random;
 
   Timer? _timer;
 
@@ -122,9 +122,7 @@ class Game {
 
     _snake.updateDirection();
 
-    Coordinate head = _snake.newHead();
-
-    head = _screen.wrap(head);
+    final Coordinate head = _screen.wrap(_snake.newHead());
 
     if (isGameOver(head)) {
       _timer?.cancel();
@@ -145,7 +143,7 @@ class Game {
     _screen.drawCoordinate(_apple, color: RED);
   }
 
-  bool isGameOver(Coordinate head) =>
+  bool isGameOver(final Coordinate head) =>
       _snake.contains(head) || _map.contains(head);
 
   Coordinate generateApple() {
@@ -163,8 +161,8 @@ class Game {
   /// register at all, and WASD generates the character code
   /// instead of the actual key code. These hardcoded values should
   /// be removed eventually
-  void handleKeypress(KeyboardEvent e) {
-    KeyEvent wrapped = KeyEvent.wrap(e);
+  void handleKeypress(final KeyboardEvent e) {
+    final KeyEvent wrapped = KeyEvent.wrap(e);
 
     switch (wrapped.keyCode) {
       case KeyCode.UP:

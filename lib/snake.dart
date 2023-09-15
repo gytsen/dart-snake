@@ -29,7 +29,7 @@ class Snake {
   late Direction direction;
   late Direction requestedDirection;
 
-  late List<Coordinate> body;
+  late final List<Coordinate> body;
 
   Snake() {
     body = new List.empty(growable: true);
@@ -49,11 +49,11 @@ class Snake {
 
   Coordinate get head => this.body[HEAD_INDEX];
 
-  bool contains(Coordinate c) => this.body.contains(c);
+  bool contains(final Coordinate c) => this.body.contains(c);
 
-  bool headHits(Coordinate c) => c == this.head;
+  bool headHits(final Coordinate c) => c == this.head;
 
-  void requestChangeDirection(Direction requested) =>
+  void requestChangeDirection(final Direction requested) =>
       this.requestedDirection = requested;
 
   /// check if a requested change of [Direction] is actually possible
@@ -90,7 +90,7 @@ class Snake {
     return head;
   }
 
-  void addNewHead(Coordinate newHead, {bool preserveTail = false}) {
+  void addNewHead(final Coordinate newHead, {final bool preserveTail = false}) {
     body.insert(HEAD_INDEX, newHead);
     if (!preserveTail) {
       body.removeLast();

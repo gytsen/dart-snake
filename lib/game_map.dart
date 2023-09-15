@@ -19,45 +19,45 @@ class GameMap {
     _walls = Set<Coordinate>();
   }
 
-  bool compatibleWith(int width, int height) =>
+  bool compatibleWith(final int width, final int height) =>
       this.height == height && this.width == width;
 
-  bool contains(Coordinate c) => _walls.contains(c);
+  bool contains(final Coordinate c) => _walls.contains(c);
 
   Set<Coordinate> get walls => _walls;
 
-  GameMap.fromJson(String json) {
-    var walls = new Set<Coordinate>();
-    var decodedJson = jsonDecode(json);
+  GameMap.fromJson(final String json) {
+    final walls = new Set<Coordinate>();
+    final decodedJson = jsonDecode(json);
 
     if (decodedJson is! Map) {
       throw new ArgumentError("Wall JSON should be an object");
     }
 
-    var height = decodedJson['height'];
+    final height = decodedJson['height'];
     if (height == null || height is! int) {
       throw new ArgumentError(
           "Height should be an int, found ${height.runtimeType} instead");
     }
 
-    var width = decodedJson['width'];
+    final width = decodedJson['width'];
     if (width == null || width is! int) {
       throw new ArgumentError(
           "Width should be an int, found ${width.runtimeType} instead");
     }
 
-    var decodedWalls = decodedJson['walls'];
+    final decodedWalls = decodedJson['walls'];
     if (decodedWalls == null || decodedWalls is! List) {
       throw new ArgumentError(
           "Wall list must be an array, found ${decodedWalls.runtimeType} instead");
     }
 
-    for (var wall in decodedWalls) {
+    for (final wall in decodedWalls) {
       if (wall is! List || wall.length != WALL_COORDINATE_SIZE) {
         throw new ArgumentError("Wall JSON must use arrays of exactly size 2");
       }
 
-      var wallCoordinate = new Coordinate(wall[WALL_X_IDX], wall[WALL_Y_IDX]);
+      final wallCoordinate = new Coordinate(wall[WALL_X_IDX], wall[WALL_Y_IDX]);
       walls.add(wallCoordinate);
     }
 
@@ -67,16 +67,16 @@ class GameMap {
   }
 
   static String encode(int width, int height, Set<Coordinate> walls) {
-    List<List<int>> encodedWalls = List.empty(growable: true);
+    final List<List<int>> encodedWalls = List.empty(growable: true);
 
-    for (var wall in walls) {
+    for (final wall in walls) {
       List<int> entry = List.empty(growable: true);
       entry[WALL_X_IDX] = wall.x;
       entry[WALL_Y_IDX] = wall.y;
       encodedWalls.add(entry);
     }
 
-    var map = {'height': height, 'width': width, 'walls': encodedWalls};
+    final map = {'height': height, 'width': width, 'walls': encodedWalls};
 
     return jsonEncode(map);
   }

@@ -2,6 +2,16 @@ import 'dart:html';
 
 import 'package:dart_snake/coordinate.dart';
 
+int wrappingClamp(final int value, final int min, final int max) {
+  if (value < min) {
+    return max;
+  } else if (value > max) {
+    return min;
+  } else {
+    return value;
+  }
+}
+
 /// [Screen] implements a grid system for the snake game to be played on
 /// and handles the transformation logic needed to translate from [Game]
 /// coordinates to actual canvas coordinates.
@@ -11,16 +21,16 @@ class Screen {
   late CanvasElement canvas;
   late int height;
   late int width;
-  late int boxSize;
+  static const int boxSize = 20;
+  static const int borderSize = 3;
 
-  late int borderSize;
-  late Point borderTranspose;
+  static const Point borderTranspose = const Point(borderSize, borderSize);
 
   CanvasRenderingContext2D get context => canvas.context2D;
 
   int get trimmedBoxSize => boxSize - borderSize;
 
-  Screen(CanvasElement? canvas, {int borderSize = 3, int boxSize = 20}) {
+  Screen(final CanvasElement? canvas) {
     if (canvas == null) {
       throw new ArgumentError("Must pass a CanvasElement!");
     } else if (canvas.height?.remainder(boxSize) != 0 ||
@@ -31,9 +41,6 @@ class Screen {
 
     this.height = canvas.height! ~/ boxSize;
     this.width = canvas.width! ~/ boxSize;
-    this.boxSize = boxSize;
-    this.borderSize = borderSize;
-    this.borderTranspose = new Point(borderSize, borderSize);
     this.canvas = canvas;
     // clear any previously drawn stuff on the canvas
     clear();
@@ -46,29 +53,14 @@ class Screen {
   /// if it would be out of bounds.
   /// Note that this function does not edit the original
   /// [Coordinate], but creates a new one
-  Coordinate wrap(Coordinate c) {
-    int x = c.x;
-    int y = c.y;
-
-    if (c.x > this.width - 1) {
-      x = 0;
-    } else if (c.x < 0) {
-      x = this.width - 1;
-    }
-
-    if (c.y > this.height - 1) {
-      y = 0;
-    } else if (c.y < 0) {
-      y = this.height - 1;
-    }
-
-    return new Coordinate(x, y);
-  }
+  Coordinate wrap(final Coordinate c) => new Coordinate(
+      wrappingClamp(c.x, 0, this.width - 1),
+      wrappingClamp(c.y, 0, this.height - 1));
 
   /// Draw a list of [Coordinate]s on the canvas.
   /// Note that this method automatically transforms the coordinates
   /// to [Point]s on the canvas.
-  void drawCoordinates(Iterable<Coordinate> coordinates,
+  void drawCoordinates(final Iterable<Coordinate> coordinates,
       {String color = '#000'}) {
     for (var coordinate in coordinates) {
       drawCoordinate(coordinate, color: color);
@@ -77,9 +69,9 @@ class Screen {
 
   /// Draw a single [Coordinate] on the canvas.
   /// The coordinate is automatically converted to a point on the canvas
-  void drawCoordinate(Coordinate coordinate, {String color = '#000'}) {
-    var canvasPoint = getCanvasDrawPoint(coordinate);
-    var borderedCanvasPoint = canvasPoint + this.borderTranspose;
+  void drawCoordinate(final Coordinate coordinate, {String color = '#000'}) {
+    final canvasPoint = getCanvasDrawPoint(coordinate);
+    final borderedCanvasPoint = canvasPoint + Screen.borderTranspose;
 
     context.fillStyle = color;
     context.fillRect(borderedCanvasPoint.x, borderedCanvasPoint.y,
@@ -91,7 +83,7 @@ class Screen {
   /// on the canvas. The function asserts that the [Coordinate] is
   /// not drawn outside of the [Screen] boundaries, and crashes the program
   /// if it detects that this is attempted.
-  Point getCanvasDrawPoint(Coordinate c) {
+  Point getCanvasDrawPoint(final Coordinate c) {
     assert(c.x >= 0 && c.x <= this.width);
     assert(c.y >= 0 && c.y <= this.height);
     return new Point(c.x * boxSize, c.y * boxSize);
@@ -99,7 +91,7 @@ class Screen {
 
   /// Convert the given [Point] to a [Coordinate]. Useful for click handlers
   /// to see where in the grid a user clicked.
-  Coordinate getCoordinateFromCanvas(Point p) {
+  Coordinate getCoordinateFromCanvas(final Point p) {
     return new Coordinate(p.x ~/ boxSize, p.y ~/ boxSize);
   }
 }
